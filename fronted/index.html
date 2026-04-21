@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>3 Tier App</title>
+</head>
+<body>
+
+<h2>Message App</h2>
+
+<input type="text" id="msg" placeholder="Enter message">
+<button onclick="send()">Send</button>
+
+<h3>Messages:</h3>
+<ul id="list"></ul>
+
+<script>
+const API = "http://backend:5000"; // in k8s use service name
+
+function send() {
+    let text = document.getElementById("msg").value;
+
+    fetch(API + "/add", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({text: text})
+    }).then(() => load());
+}
+
+function load() {
+    fetch(API + "/messages")
+    .then(res => res.json())
+    .then(data => {
+        let list = document.getElementById("list");
+        list.innerHTML = "";
+        data.forEach(row => {
+            let li = document.createElement("li");
+            li.innerText = row[1];
+            list.appendChild(li);
+        });
+    });
+}
+
+load();
+</script>
+
+</body>
+</html>
